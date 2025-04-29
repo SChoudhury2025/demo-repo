@@ -1,0 +1,81 @@
+@import url('https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply font-sans;
+}
+
+.headline::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50px;
+  height: 3px;
+  background-color: theme('colors.unit_forth');
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: stretch;
+  width: 100%;
+  max-width: 80%;
+  margin: 0 auto;
+}
+
+.action-buttons a {
+  border-radius: 0 !important;
+  margin: 0 !important;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: none;
+}
+
+.specialities-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 2px;
+  justify-items: center;
+}
+
+.speciality-card {
+  background-color: #f2f2f2;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  width: 300px;
+  height: 134px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; /* Center items vertically */
+}
+
+.speciality-card i {
+  font-size: 40px; /* Adjust icon size */
+  color: #DC2626;
+  margin-bottom: 10px;
+  text-align: center; /* Ensure icons are centered */
+}
+
+.speciality-card h3 {
+  font-size: 16px;
+  color: #333;
+  text-align: center;
+}
+
+/* Add your custom styles here */
+.bg-unit_primary {
+  background-color: #f0f0f0; /* Example color */
+}
+
+.bg-unit_forth {
+  background-color: #e0e0e0; /* Example color */
+}
