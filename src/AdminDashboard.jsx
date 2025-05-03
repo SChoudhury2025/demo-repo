@@ -4,10 +4,10 @@ import { Link, Route, Routes } from 'react-router-dom';
 import ServicesPage from './ServicesPage';
 import AdminDepartmentTable from './AdminDepartmentTable';
 import AdminDoctorTable from './AdminDoctorTable';
+import AdminHospitalTable from './AdminHospitalTable';
 import ProfileSection from './ProfileSection';
 
 // Placeholder components
-const HospitalsPage = () => <div className="p-8">Hospitals Page</div>;
 const UsersPage = () => <div className="p-8">Users Page</div>;
 const PackagesPage = () => <div className="p-8">Health Packages Page</div>;
 
@@ -103,8 +103,8 @@ const AdminDashboard = () => {
           />
           <Route path="services" element={<ServicesPage />} />
           <Route path="departments" element={<AdminDepartmentTable />} />
+          <Route path="hospitals" element={<AdminHospitalTable />} />
           <Route path="doctors" element={<AdminDoctorTable />} />
-          <Route path="hospitals" element={<HospitalsPage />} />
           <Route path="users" element={<UsersPage />} />
           <Route path="packages" element={<PackagesPage />} />
         </Routes>

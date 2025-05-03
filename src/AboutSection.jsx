@@ -20,7 +20,7 @@ const AboutSection = () => {
           {/* Right side - Content */}
           <div className="md:w-1/2">
             <h2 className="text-3xl font-bold text-gray-800 mb-6 relative">
-              Why Choose CMRI?
+              Why Choose Healcraft?
               <span className="absolute bottom-0 left-0 w-20 h-1 bg-red-600 -mb-2"></span>
             </h2>
             <p className="text-gray-600 mb-4 leading-relaxed">

@@ -34,13 +34,21 @@ const AdminDoctorTable = () => {
   const closeModal = () => {
     setIsModalOpen(false);
     setEditingDoctor(null);
-    fetchDoctors();
+    fetchDoctors(); // Refresh list
   };
 
   const handleEdit = async (id) => {
     try {
       const res = await axios.get(`http://localhost:8080/doctor/get-doctor/${id}`);
-      setEditingDoctor(res.data);
+      const data = res.data;
+
+      // Flatten nested department and hospital info for modal form
+      setEditingDoctor({
+        ...data,
+        deptId: data.department?.id,
+        hospiId: data.hospital?.id
+      });
+
       setIsModalOpen(true);
     } catch (err) {
       console.error('Failed to fetch doctor:', err);
@@ -102,8 +110,8 @@ const AdminDoctorTable = () => {
                 <th className="p-2 border-b w-[160px]">Experience</th>
                 <th className="p-2 border-b w-[200px]">About</th>
                 <th className="p-2 border-b w-[140px]">Consultant</th>
-                <th className="p-2 border-b w-[160px]">Department ID</th>
-                <th className="p-2 border-b w-[160px]">Hospital ID</th>
+                <th className="p-2 border-b w-[160px]">Department</th>
+                <th className="p-2 border-b w-[160px]">Hospital</th>
                 <th className="p-2 border-b w-[150px]">Actions</th>
               </tr>
             </thead>
@@ -123,8 +131,8 @@ const AdminDoctorTable = () => {
                         {doc.consultant ? 'Yes' : 'No'}
                       </span>
                     </td>
-                    <td className="p-2 border-b">{doc.deptId}</td>
-                    <td className="p-2 border-b">{doc.hospiId}</td>
+                    <td className="p-2 border-b">{doc.department?.name || '-'}</td>
+                    <td className="p-2 border-b">{doc.hospital?.name || '-'}</td>
                     <td className="p-2 border-b">
                       <div className="flex justify-center space-x-2">
                         <button onClick={() => handleEdit(doc.id)} className="p-1 text-blue-600 hover:bg-blue-50 rounded">
@@ -147,7 +155,11 @@ const AdminDoctorTable = () => {
         </div>
       </div>
 
-      <AdminDoctorModal isOpen={isModalOpen} onClose={closeModal} editingDoctor={editingDoctor} />
+      <AdminDoctorModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        editingDoctor={editingDoctor}
+      />
     </div>
   );
 };

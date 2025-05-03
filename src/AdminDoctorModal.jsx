@@ -40,41 +40,44 @@ const AdminDoctorModal = ({ isOpen, onClose, editingDoctor }) => {
     }
 
     if (!deptId || isNaN(deptId)) {
-      alert("Please enter a valid Department ID.");
+      alert("Please enter a valid Department.");
       return;
     }
 
     if (!hospiId || isNaN(hospiId)) {
-      alert("Please enter a valid Hospital ID.");
+      alert("Please enter a valid Hospital.");
       return;
     }
 
     const payload = {
-      id: editingDoctor?.id || null, // Include id to identify if we are editing
+      id: editingDoctor?.id || null,
       name: doctorName,
       degree,
       experience,
       about,
       consultant,
-      deptId: Number(deptId),
+      department: {
+        id : Number(id),
+        name: name
+      },
       hospiId: Number(hospiId),
     };
 
     try {
       setIsSubmitting(true);
 
-      // Use the appropriate endpoint for editing or adding
       const res = await axios.post(
-        editingDoctor ? 'http://localhost:8080/doctor/edit-doctor' : 'http://localhost:8080/doctor/add-doctor',
+        editingDoctor
+          ? 'http://localhost:8080/doctor/edit-doctor'
+          : 'http://localhost:8080/doctor/add-doctor',
         payload
       );
 
-      // Log the response for debugging purposes
       console.log('API Response:', res);
 
       if (res.status === 200) {
         alert(editingDoctor ? "Doctor updated successfully!" : "Doctor saved successfully!");
-        onClose();  // Close the modal after success
+        onClose();
       } else {
         alert(`Unexpected error occurred. Status: ${res.status}`);
       }
@@ -161,12 +164,12 @@ const AdminDoctorModal = ({ isOpen, onClose, editingDoctor }) => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Department ID<span className="text-red-500">*</span>
+              Department<span className="text-red-500">*</span>
             </label>
-            <input
+            <input id='id'
               type="number"
               className="w-full border rounded-md px-3 py-2"
-              value={deptId}
+              value={name}
               onChange={(e) => setDeptId(e.target.value)}
               required
             />
@@ -174,7 +177,7 @@ const AdminDoctorModal = ({ isOpen, onClose, editingDoctor }) => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Hospital ID<span className="text-red-500">*</span>
+              Hospital<span className="text-red-500">*</span>
             </label>
             <input
               type="number"
