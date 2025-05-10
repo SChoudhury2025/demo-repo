@@ -9,9 +9,32 @@ const AdminDoctorModal = ({ isOpen, onClose, editingDoctor }) => {
   const [consultant, setConsultant] = useState(false);
   const [deptId, setDeptId] = useState('');
   const [hospiId, setHospiId] = useState('');
+  const [departments, setDepartments] = useState([]);
+  const [hospitals, setHospitals] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
+    const fetchDepartments = async () => {
+      try {
+        const res = await axios.get('http://localhost:8080/department/get-active-department');
+        setDepartments(res.data || []);
+      } catch (error) {
+        console.error('Failed to fetch departments:', error);
+      }
+    };
+
+    const fetchHospitals = async () => {
+      try {
+        const res = await axios.get('http://localhost:8080/hospital/get-all-hospitals');
+        setHospitals(res.data || []);
+      } catch (error) {
+        console.error('Failed to fetch hospitals:', error);
+      }
+    };
+
+    fetchDepartments();
+    fetchHospitals();
+
     if (editingDoctor) {
       setDoctorName(editingDoctor.name || '');
       setDegree(editingDoctor.degree || '');
@@ -40,12 +63,12 @@ const AdminDoctorModal = ({ isOpen, onClose, editingDoctor }) => {
     }
 
     if (!deptId || isNaN(deptId)) {
-      alert("Please enter a valid Department.");
+      alert("Please select a valid Department.");
       return;
     }
 
     if (!hospiId || isNaN(hospiId)) {
-      alert("Please enter a valid Hospital.");
+      alert("Please select a valid Hospital.");
       return;
     }
 
@@ -56,10 +79,7 @@ const AdminDoctorModal = ({ isOpen, onClose, editingDoctor }) => {
       experience,
       about,
       consultant,
-      department: {
-        id : Number(id),
-        name: name
-      },
+      deptId: Number(deptId),
       hospiId: Number(hospiId),
     };
 
@@ -67,13 +87,9 @@ const AdminDoctorModal = ({ isOpen, onClose, editingDoctor }) => {
       setIsSubmitting(true);
 
       const res = await axios.post(
-        editingDoctor
-          ? 'http://localhost:8080/doctor/edit-doctor'
-          : 'http://localhost:8080/doctor/add-doctor',
+        'http://localhost:8080/doctor/add-doctor',
         payload
       );
-
-      console.log('API Response:', res);
 
       if (res.status === 200) {
         alert(editingDoctor ? "Doctor updated successfully!" : "Doctor saved successfully!");
@@ -166,26 +182,34 @@ const AdminDoctorModal = ({ isOpen, onClose, editingDoctor }) => {
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Department<span className="text-red-500">*</span>
             </label>
-            <input id='id'
-              type="number"
+            <select
               className="w-full border rounded-md px-3 py-2"
-              value={name}
+              value={deptId}
               onChange={(e) => setDeptId(e.target.value)}
               required
-            />
+            >
+              <option value="">Select Department</option>
+              {departments.map(dept => (
+                <option key={dept.id} value={dept.id}>{dept.name}</option>
+              ))}
+            </select>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Hospital<span className="text-red-500">*</span>
             </label>
-            <input
-              type="number"
+            <select
               className="w-full border rounded-md px-3 py-2"
               value={hospiId}
               onChange={(e) => setHospiId(e.target.value)}
               required
-            />
+            >
+              <option value="">Select Hospital</option>
+              {hospitals.map(hosp => (
+                <option key={hosp.id} value={hosp.id}>{hosp.name}</option>
+              ))}
+            </select>
           </div>
 
           <div className="flex justify-end gap-2 pt-4 border-t">

@@ -92,7 +92,7 @@ const ServicesPage = () => {
               <th className="p-2 border-b">ID</th>
               <th className="p-2 border-b">Name</th>
               <th className="p-2 border-b">Description</th>
-              <th className="p-2 border-b">Prime Option</th>
+              <th className="p-2 border-b">Prime</th> {/* Updated field name */}
               <th className="p-2 border-b">Status</th>
               <th className="p-2 border-b">Actions</th>
             </tr>
@@ -104,7 +104,7 @@ const ServicesPage = () => {
                   <td className="p-2 border-b">{service.id}</td>
                   <td className="p-2 border-b">{service.name}</td>
                   <td className="p-2 border-b">{service.description}</td>
-                  <td className="p-2 border-b">{service.prime ? 'Premium' : 'Basic'}</td>
+                  <td className="p-2 border-b">{service.prime ? 'Prime' : 'Not Prime'}</td> {/* Updated value */}
                   <td className="p-2 border-b">
                     <span className={`px-2 py-1 rounded-full text-xs font-semibold ${service.active ? 'bg-green-100 text-green-800' : 'bg-gray-200 text-gray-600'}`}>
                       {service.active ? 'Active' : 'Inactive'}

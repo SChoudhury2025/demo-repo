@@ -4,25 +4,25 @@ import axios from 'axios';
 const AddServiceModal = ({ isOpen, onClose, editingService }) => {
   const [serviceName, setServiceName] = useState('');
   const [description, setDescription] = useState('');
-  const [primeOptions, setPrimeOptions] = useState('');
+  const [prime, setPrime] = useState(false);
   const [active, setActive] = useState(false);
 
   useEffect(() => {
     if (editingService) {
       setServiceName(editingService.name || '');
       setDescription(editingService.description || '');
-      setPrimeOptions(editingService.prime ? 'premium' : 'basic');
+      setPrime(editingService.prime || false);
       setActive(editingService.active || false);
     } else {
       setServiceName('');
       setDescription('');
-      setPrimeOptions('');
+      setPrime(false);
       setActive(false);
     }
   }, [editingService]);
 
   const handleSave = async () => {
-    if (!serviceName || !description || !primeOptions) {
+    if (!serviceName || !description) {
       alert('Please fill in all required fields.');
       return;
     }
@@ -32,13 +32,13 @@ const AddServiceModal = ({ isOpen, onClose, editingService }) => {
       name: serviceName,
       description,
       active,
-      prime: primeOptions !== 'basic',
+      prime,
     };
 
     try {
       const response = await axios.post('http://localhost:8080/service/add-service', serviceData);
       if (response.status === 200) {
-        alert('Service saved successfully!');
+        alert(editingService ? 'Updated successfully!' : 'Service saved successfully!'); // Updated alert message
         onClose();
       } else {
         alert('Failed to save service.');
@@ -92,21 +92,15 @@ const AddServiceModal = ({ isOpen, onClose, editingService }) => {
             ></textarea>
           </div>
 
-          <div>
-            <label htmlFor="primeOptions" className="block text-sm font-medium text-gray-700 mb-1">
-              Prime Options<span className="text-red-500">*</span>
-            </label>
-            <select
-              id="primeOptions"
-              className="w-full border rounded-md px-3 py-2"
-              value={primeOptions}
-              onChange={(e) => setPrimeOptions(e.target.value)}
-            >
-              <option value="" disabled>Select options...</option>
-              <option value="basic">Basic</option>
-              <option value="premium">Premium</option>
-              <option value="enterprise">Enterprise</option>
-            </select>
+          <div className="flex items-center">
+            <input
+              type="checkbox"
+              id="prime"
+              className="h-4 w-4 text-red-600 border-gray-300 rounded"
+              checked={prime}
+              onChange={(e) => setPrime(e.target.checked)}
+            />
+            <label htmlFor="prime" className="ml-2 text-sm text-gray-900">Prime</label>
           </div>
 
           <div className="flex items-center">

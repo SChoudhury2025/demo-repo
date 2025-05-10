@@ -39,7 +39,7 @@ const AdminDepartmentModal = ({ isOpen, onClose, editingDepartment }) => {
       const res = await axios.post('http://localhost:8080/department/add-department', payload);
 
       if (res.status === 200) {
-        alert("Department saved successfully!");
+        alert(editingDepartment ? 'Updated successfully!' : 'Department saved successfully!'); // Updated alert message
         onClose();
       } else {
         alert("Unexpected error occurred.");

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
 import DoctorsSection from './DoctorsSection';
 import AboutSection from './AboutSection';
@@ -13,11 +13,35 @@ import AdminDepartmentModal from './AdminDepartmentModal';
 import AdminDoctorModal from './AdminDoctorModal';
 import AdminHospitalModal from './AdminHospitalModal';
 import Header from './Header';
-import OTDepartmentSelection from './OTDepartmentSelection'; // ✅
-import OTPackagesPage from './OTPackagesPage'; // ✅ Imported
+import OTDepartmentSelection from './OTDepartmentSelection';
+import OTPackagesPage from './OTPackagesPage';
+import axios from 'axios';
 
 function HomePage({ setIsModalOpen, setIsDepartmentModalOpen }) {
   const navigate = useNavigate();
+  const [nonPrimeServices, setNonPrimeServices] = useState([]);
+  const [primeServices, setPrimeServices] = useState([]);
+
+  useEffect(() => {
+    axios.get('http://localhost:8080/service/get-all-services')
+      .then(response => {
+        const prime = response.data.filter(service => service.prime);
+        const nonPrime = response.data.filter(service => !service.prime);
+        setPrimeServices(prime);
+        setNonPrimeServices(nonPrime);
+      })
+      .catch(error => console.error('Error fetching services:', error));
+  }, []);
+
+  const getIconClass = (name) => {
+    const lower = name.toLowerCase();
+    if (lower.includes("doctor")) return "bi bi-person-fill";
+    if (lower.includes("insurance")) return "bi bi-shield-check";
+    if (lower.includes("consult")) return "bi bi-chat-dots";
+    if (lower.includes("hospital")) return "bi bi-hospital";
+    if (lower.includes("test") || lower.includes("lab")) return "bi bi-clipboard-pulse";
+    return "bi bi-star"; // default icon
+  };
 
   return (
     <>
@@ -32,24 +56,30 @@ function HomePage({ setIsModalOpen, setIsDepartmentModalOpen }) {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-0 max-w-7xl mx-auto w-full px-4 mt-0 overflow-hidden">
-        <div
-          className="bg-red-700 text-white text-center p-8 rounded-none shadow hover:bg-red-800 transition cursor-pointer"
-          onClick={() => navigate('/ot-department-selection')}
-        >
-          <i className="bi bi-person-badge text-4xl mb-2"></i>
-          <h3 className="text-xl font-semibold mb-1">OT Comparison</h3>
-          <p className="text-sm">Discover the difference</p>
-        </div>
-        <div className="bg-gray-700 text-white text-center p-8 rounded-none shadow hover:bg-gray-800 transition">
-          <i className="bi bi-heart-pulse text-4xl mb-2"></i>
-          <h3 className="text-xl font-semibold mb-1">Health Check up Plans</h3>
-          <p className="text-sm">Affordable Health Packages</p>
-        </div>
-        <div className="bg-blue-700 text-white text-center p-8 rounded-none shadow hover:bg-blue-800 transition">
-          <i className="bi bi-calendar-check text-4xl mb-2"></i>
-          <h3 className="text-xl font-semibold mb-1">Book Appointment</h3>
-          <p className="text-sm">Schedule your visit</p>
-        </div>
+        {primeServices[0] && (
+          <div
+            className="bg-red-700 text-white text-center p-8 rounded-none shadow hover:bg-red-800 transition cursor-pointer"
+            onClick={() => navigate('/ot-department-selection')}
+          >
+            <i className="bi bi-person-badge text-4xl mb-2"></i>
+            <h3 className="text-xl font-semibold mb-1">{primeServices[0].name}</h3>
+            <p className="text-sm">{primeServices[0].description}</p>
+          </div>
+        )}
+        {primeServices[1] && (
+          <div className="bg-gray-700 text-white text-center p-8 rounded-none shadow hover:bg-gray-800 transition">
+            <i className="bi bi-heart-pulse text-4xl mb-2"></i>
+            <h3 className="text-xl font-semibold mb-1">{primeServices[1].name}</h3>
+            <p className="text-sm">{primeServices[1].description}</p>
+          </div>
+        )}
+        {primeServices[2] && (
+          <div className="bg-blue-700 text-white text-center p-8 rounded-none shadow hover:bg-blue-800 transition">
+            <i className="bi bi-calendar-check text-4xl mb-2"></i>
+            <h3 className="text-xl font-semibold mb-1">{primeServices[2].name}</h3>
+            <p className="text-sm">{primeServices[2].description}</p>
+          </div>
+        )}
       </div>
 
       <AboutSection />
@@ -59,22 +89,15 @@ function HomePage({ setIsModalOpen, setIsDepartmentModalOpen }) {
           Our Core Specialities
         </h2>
         <div className="flex flex-wrap lg:flex-nowrap justify-center gap-10 overflow-hidden">
-          <div className="bg-gray-100 w-[300px] h-[134px] p-4 rounded-lg shadow hover:shadow-lg transition flex flex-col items-center justify-center text-center">
-            <i className="bi bi-person-fill text-3xl text-red-600 mb-2"></i>
-            <h3 className="text-lg font-medium text-gray-800">Find a Doctor</h3>
-          </div>
-          <div className="bg-gray-100 w-[300px] h-[134px] p-4 rounded-lg shadow hover:shadow-lg transition flex flex-col items-center justify-center text-center">
-            <i className="bi bi-shield-check text-3xl text-red-600 mb-2"></i>
-            <h3 className="text-lg font-medium text-gray-800">Know Your Insurance</h3>
-          </div>
-          <div className="bg-gray-100 w-[300px] h-[134px] p-4 rounded-lg shadow hover:shadow-lg transition flex flex-col items-center justify-center text-center">
-            <i className="bi bi-chat-dots text-3xl text-red-600 mb-2"></i>
-            <h3 className="text-lg font-medium text-gray-800">Online Consultation</h3>
-          </div>
-          <div className="bg-gray-100 w-[300px] h-[134px] p-4 rounded-lg shadow hover:shadow-lg transition flex flex-col items-center justify-center text-center">
-            <i className="bi bi-hospital text-3xl text-red-600 mb-2"></i>
-            <h3 className="text-lg font-medium text-gray-800">Hospitals</h3>
-          </div>
+          {nonPrimeServices.map((service, index) => (
+            <div
+              key={index}
+              className="bg-gray-100 w-[300px] h-[134px] p-4 rounded-lg shadow hover:shadow-lg transition flex flex-col items-center justify-center text-center"
+            >
+              <i className={`${getIconClass(service.name)} text-3xl text-red-600 mb-2`}></i>
+              <h3 className="text-lg font-medium text-gray-800">{service.name}</h3>
+            </div>
+          ))}
         </div>
       </div>
 
@@ -100,7 +123,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/admin/dashboard/*" element={<AdminDashboard />} />
         <Route path="/ot-department-selection" element={<OTDepartmentSelection />} />
-        <Route path="/ot-packages-page" element={<OTPackagesPage />} /> {/* ✅ Route to packages page */}
+        <Route path="/ot-packages-page" element={<OTPackagesPage />} />
       </Routes>
 
       <div className="fixed right-4 bottom-4 flex flex-col space-y-4">

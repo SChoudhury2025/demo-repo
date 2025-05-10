@@ -31,7 +31,7 @@ const AdminHospitalModal = ({ isOpen, onClose, editingHospital }) => {
       setContact(editingHospital.contact || '');
       setEmail(editingHospital.email || '');
       setUrl(editingHospital.url || '');
-      setSelectedDepartments(editingHospital.departments?.map(dep => dep.id) || []);
+      setSelectedDepartments(editingHospital.departments?.map(dept => dept.id) || []);
     } else {
       setHospitalName('');
       setDescription('');
@@ -51,7 +51,6 @@ const AdminHospitalModal = ({ isOpen, onClose, editingHospital }) => {
       return;
     }
 
-    // Only check the contact validation if the contact field is being edited or a new contact is entered
     if (!editingHospital && (contact.length !== 10 || isNaN(contact))) {
       alert("Contact number must be exactly 10 digits.");
       return;
@@ -84,8 +83,7 @@ const AdminHospitalModal = ({ isOpen, onClose, editingHospital }) => {
       );
 
       if (res.status === 200) {
-        alert("Hospital saved successfully!");
-        // Clear the form after successful submission
+        alert(editingHospital ? 'Updated successfully!' : 'Hospital saved successfully!');
         setHospitalName('');
         setDescription('');
         setAddress('');

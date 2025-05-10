@@ -1,51 +1,34 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const DoctorsSection = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [doctors, setDoctors] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  // Doctors data with static image paths
-  const doctors = [
-    {
-      name: "Dr. Rajesh Kumar",
-      specialty: "Orthopedics & Joint Replacement",
-      experience: "15+ Years Experience",
-      image: "/doc_1.png"
-    },
-    {
-      name: "Dr. Priya Sharma",
-      specialty: "Cardiology",
-      experience: "12+ Years Experience",
-      image: "/doc_2.png"
-    },
-    {
-      name: "Dr. Amit Patel",
-      specialty: "Neurology",
-      experience: "18+ Years Experience",
-      image: "/doc_3.png"
-    },
-    {
-      name: "Dr. Sunita Verma",
-      specialty: "Gynecology",
-      experience: "10+ Years Experience",
-      image: "/doc_4.png"
-    },
-    {
-      name: "Dr. Vikram Singh",
-      specialty: "Pulmonology",
-      experience: "14+ Years Experience",
-      image: "/doc_5.png"
-    },
-    {
-      name: "Dr. Neha Gupta",
-      specialty: "ENT - Otolaryngology",
-      experience: "9+ Years Experience",
-      image: "/doc_6.png"
-    }
-  ];
+  // Map doctor names to custom local image paths
+  const doctorImages = {
+   
+    // Add more mappings as needed
+  };
+
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      try {
+        setLoading(true);
+        const res = await axios.get('http://localhost:8080/doctor/get-all-doctors');
+        setDoctors(res.data);
+      } catch (err) {
+        console.error('Failed to fetch doctors:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchDoctors();
+  }, []);
 
   const nextSlide = () => {
-    setCurrentSlide((prev) => Math.min(prev + 1, doctors.length - 3));
+    setCurrentSlide((prev) => Math.min(prev + 1, doctors.length - 4));
   };
 
   const prevSlide = () => {
@@ -54,63 +37,80 @@ const DoctorsSection = () => {
 
   return (
     <section className="py-16 bg-white">
-      <div className="container mx-auto px-4">
+      <div className="max-w-7xl mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 className="relative text-3xl md:text-5xl text-unit_forth text-center my-4 mb-12 headline">Our Clinical Experts</h2>
-          <p className="mt-4 text-gray-600 max-w-2xl mx-auto">
+          <h2 className="text-3xl md:text-5xl text-unit_forth mb-6">Our Clinical Experts</h2>
+          <p className="mt-2 text-gray-600 max-w-2xl mx-auto">
             Meet our team of experienced specialists dedicated to providing exceptional healthcare.
           </p>
         </div>
 
         <div className="relative">
-          {/* Doctor Slider */}
           <div className="overflow-hidden">
             <div
-              className="flex transition-transform duration-500 ease-in-out"
+              className="flex transition-transform duration-500 ease-in-out gap-2"
               style={{ transform: `translateX(-${currentSlide * 25}%)` }}
             >
-              {doctors.map((doctor, index) => (
-                <div key={index} className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 flex-shrink-0 px-4">
-                  <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-6 transition-transform hover:transform h-full flex flex-col">
-                    <img
-                      src={doctor.image}
-                      alt={doctor.name}
-                      className="w-full h-72 object-cover object-center"
-                    />
-                    <div className="p-4 group hover:bg-red-600 transition-colors duration-300 flex-grow flex flex-col bg-[#eae6e5]">
-                      <div>
-                        <h3 className="text-lg font-bold text-gray-800 group-hover:text-white">{doctor.name}</h3>
-                        <p className="text-sm text-red-600 group-hover:text-white font-medium">{doctor.specialty}</p>
-                        <p className="text-sm text-gray-600 group-hover:text-white leading-relaxed mt-2">{doctor.experience}</p>
-                      </div>
-                      <div className="flex space-x-2 mt-auto">
-                        <a
-                          href="tel:+918062136595"
-                          className="flex-1 bg-gray-200 group-hover:bg-white text-gray-800 text-center py-1.5 rounded hover:bg-gray-300 transition-colors text-xs"
-                        >
-                          <span className="flex items-center justify-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                            </svg>
-                            Call Us
-                          </span>
-                        </a>
-                        <Link
-                          to={`/appointment?doctor=${index}`}
-                          className="flex-1 bg-red-600 group-hover:bg-white group-hover:text-red-600 text-white text-center py-1.5 rounded hover:bg-red-700 transition-colors text-xs"
-                        >
-                          <span className="flex items-center justify-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
-                            Book Appointment
-                          </span>
-                        </Link>
+              {loading ? (
+                <div className="w-full text-center py-8">Loading...</div>
+              ) : doctors.length > 0 ? (
+                doctors.map((doctor, index) => (
+                  <div key={index} className="flex-shrink-0 px-2" style={{ width: '300px' }}>
+                    <div
+                      className="rounded-lg shadow-lg overflow-hidden mb-6 flex flex-col items-center bg-white"
+                      style={{ width: '100%', height: '505px' }}
+                    >
+                      <img
+                        src={doctorImages[doctor.name] || doctor.image || '/doc_1.png'}
+                        alt={doctor.name}
+                        className="object-cover object-center"
+                        style={{ width: '100%', height: '325px' }}
+                      />
+                      <div
+                        className="p-4 group hover:bg-red-600 transition-colors duration-300 flex flex-col justify-between bg-[#eae6e5]"
+                        style={{ width: '100%', height: '180px' }}
+                      >
+                        <div>
+                          <h3 className="text-lg font-bold text-gray-800 group-hover:text-white">{doctor.name}</h3>
+                          <p className="text-sm text-red-600 group-hover:text-white font-medium">
+                            {doctor.department?.name || 'Department Not Available'}
+                          </p>
+                          <p className="text-sm text-gray-600 group-hover:text-white mt-2">{doctor.degree}</p>
+                          <p className="text-sm text-gray-600 group-hover:text-white leading-relaxed mt-2">
+                            Experience: {doctor.experience}
+                          </p>
+                        </div>
+                        <div className="flex space-x-2 mt-4">
+                          <a
+                            href="tel:+918062136595"
+                            className="flex-1 bg-gray-200 group-hover:bg-white text-gray-800 text-center py-1.5 rounded hover:bg-gray-300 transition-colors text-xs"
+                          >
+                            <span className="flex items-center justify-center">
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                              </svg>
+                              Call Us
+                            </span>
+                          </a>
+                          <a
+                            href={`#appointment/${doctor.id}`}
+                            className="flex-1 bg-red-600 group-hover:bg-white group-hover:text-red-600 text-white text-center py-1.5 rounded hover:bg-red-700 transition-colors text-xs"
+                          >
+                            <span className="flex items-center justify-center">
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                              </svg>
+                              Book Appointment
+                            </span>
+                          </a>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))
+              ) : (
+                <div className="w-full text-center py-8">No doctors found</div>
+              )}
             </div>
           </div>
 
