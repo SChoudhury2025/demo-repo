@@ -14,8 +14,10 @@ import AdminDoctorModal from './AdminDoctorModal';
 import AdminHospitalModal from './AdminHospitalModal';
 import Header from './Header';
 import OTDepartmentSelection from './OTDepartmentSelection';
+import DepartmentSelection from './DepartmentSelection';
 import OTPackagesPage from './OTPackagesPage';
 import axios from 'axios';
+
 
 function HomePage({ setIsModalOpen, setIsDepartmentModalOpen }) {
   const navigate = useNavigate();
@@ -25,8 +27,8 @@ function HomePage({ setIsModalOpen, setIsDepartmentModalOpen }) {
   useEffect(() => {
     axios.get('http://localhost:8080/service/get-all-services')
       .then(response => {
-        const prime = response.data.filter(service => service.prime);
-        const nonPrime = response.data.filter(service => !service.prime);
+        const prime = response.data.filter(service => service.prime && service.active);
+        const nonPrime = response.data.filter(service => !service.prime && service.active);
         setPrimeServices(prime);
         setNonPrimeServices(nonPrime);
       })
@@ -40,7 +42,15 @@ function HomePage({ setIsModalOpen, setIsDepartmentModalOpen }) {
     if (lower.includes("consult")) return "bi bi-chat-dots";
     if (lower.includes("hospital")) return "bi bi-hospital";
     if (lower.includes("test") || lower.includes("lab")) return "bi bi-clipboard-pulse";
-    return "bi bi-star"; // default icon
+    return "bi bi-star";
+  };
+
+  const getCustomIcon = (name) => {
+    const lower = name.toLowerCase();
+    if (lower.includes("hospital")) return "/icons/hospital_icon.png";
+    if (lower.includes("online consultation")) return "/icons/consult_icon.png";
+    if (lower.includes("insurance")) return "/icons/insurance_icon.png";
+    return null;
   };
 
   return (
@@ -89,15 +99,37 @@ function HomePage({ setIsModalOpen, setIsDepartmentModalOpen }) {
           Our Core Specialities
         </h2>
         <div className="flex flex-wrap lg:flex-nowrap justify-center gap-10 overflow-hidden">
-          {nonPrimeServices.map((service, index) => (
-            <div
-              key={index}
-              className="bg-gray-100 w-[300px] h-[134px] p-4 rounded-lg shadow hover:shadow-lg transition flex flex-col items-center justify-center text-center"
-            >
-              <i className={`${getIconClass(service.name)} text-3xl text-red-600 mb-2`}></i>
-              <h3 className="text-lg font-medium text-gray-800">{service.name}</h3>
-            </div>
-          ))}
+          {nonPrimeServices.map((service, index) => {
+            const name = service.name || '';
+            const lower = name.toLowerCase();
+            const isFindDoctor = lower.includes("find a doctor");
+            const iconClass = getIconClass(name);
+            const customIcon = getCustomIcon(name);
+
+            return (
+              <div
+                key={index}
+                className="bg-gray-100 w-[300px] h-[134px] p-4 rounded-lg shadow hover:shadow-lg transition flex flex-col items-center justify-center text-center"
+              >
+                {isFindDoctor ? (
+                  <img
+                    src="/icons/doctor_new_icon.png"
+                    alt="Find a Doctor"
+                    className="w-12 h-12 mb-2"
+                  />
+                ) : customIcon ? (
+                  <img
+                    src={customIcon}
+                    alt={service.name}
+                    className="w-12 h-12 mb-2"
+                  />
+                ) : (
+                  <i className={`${iconClass} text-3xl text-red-600 mb-2`}></i>
+                )}
+                <h3 className="text-lg font-medium text-gray-800">{service.name}</h3>
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -123,6 +155,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/admin/dashboard/*" element={<AdminDashboard />} />
         <Route path="/ot-department-selection" element={<OTDepartmentSelection />} />
+        <Route path="/department-selection" element={<DepartmentSelection />} />
         <Route path="/ot-packages-page" element={<OTPackagesPage />} />
       </Routes>
 

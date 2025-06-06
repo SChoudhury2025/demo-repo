@@ -1,8 +1,10 @@
 // src/components/Header.jsx
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Header = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="bg-white sticky top-0 z-50 shadow-md">
       {/* Top Info Bar */}
@@ -38,18 +40,37 @@ const Header = () => {
 
       {/* Main Header */}
       <header className="bg-white shadow-sm">
-        <div className="container mx-auto px-4">
-          <div className="flex justify-between items-center py-3">
-            <img src="/img_2.jpg" alt="CK Birla Hospitals Logo" className="h-12" />
-            <nav className="hidden md:flex space-x-6">
+        <div className="w-full px-0">
+          <div className="flex justify-between items-center py-3 relative w-full px-8">
+            {/* Dual Logo Section - adjusted to match Header__2.jsx */}
+            <div className="flex items-center space-x-2" style={{ minWidth: '300px' }}>
+              <img
+                src="/healcraft_8.png"
+                alt="Healcraft Icon"
+                className="h-12 object-contain"
+              />
+              <img
+                src="/healcraft_9.png"
+                alt="Healcraft Text Logo"
+                className="h-12 object-contain"
+              />
+            </div>
+
+            {/* Centered Nav Links */}
+            <nav className="absolute left-1/2 transform -translate-x-1/2 hidden md:flex space-x-6 max-w-[900px] w-full justify-center">
               <a href="#" className="text-gray-700 hover:text-red-600">Services</a>
               <a href="#" className="text-gray-700 hover:text-red-600">Patients & Visitors</a>
               <a href="#" className="text-gray-700 hover:text-red-600">Paediatric Immunisation</a>
               <a href="#" className="text-gray-700 hover:text-red-600">International Patients</a>
               <a href="#" className="text-gray-700 hover:text-red-600">About Us</a>
             </nav>
+
+            {/* Action Buttons */}
             <div className="flex items-center space-x-4">
-              <button className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
+              <button
+                className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+                onClick={() => navigate('/department-selection')}
+              >
                 Book Appointment
               </button>
               <Link to="/signup" className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">

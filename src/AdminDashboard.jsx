@@ -5,11 +5,11 @@ import ServicesPage from './ServicesPage';
 import AdminDepartmentTable from './AdminDepartmentTable';
 import AdminDoctorTable from './AdminDoctorTable';
 import AdminHospitalTable from './AdminHospitalTable';
+import AdminPackageTable from './AdminPackageTable'; // ✅ Added this line
 import ProfileSection from './ProfileSection';
 
 // Placeholder components
 const UsersPage = () => <div className="p-8">Users Page</div>;
-const PackagesPage = () => <div className="p-8">Health Packages Page</div>;
 
 const AdminDashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -106,7 +106,7 @@ const AdminDashboard = () => {
           <Route path="hospitals" element={<AdminHospitalTable />} />
           <Route path="doctors" element={<AdminDoctorTable />} />
           <Route path="users" element={<UsersPage />} />
-          <Route path="packages" element={<PackagesPage />} />
+          <Route path="packages" element={<AdminPackageTable />} /> {/* ✅ Updated this line */}
         </Routes>
       </div>
     </div>

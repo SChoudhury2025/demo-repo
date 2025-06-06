@@ -266,13 +266,6 @@ const Signup = () => {
                   {isLoading ? 'Creating account...' : 'Create account'}
                 </button>
               </div>
-
-              {/* Admin login link */}
-              <div className="mt-3">
-                <Link to="/admin/login" className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
-                  Sign in as Admin
-                </Link>
-              </div>
             </form>
           </div>
         </div>
