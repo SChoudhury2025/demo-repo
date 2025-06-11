@@ -12,12 +12,12 @@ import AddServiceModal from './AddServiceModal';
 import AdminDepartmentModal from './AdminDepartmentModal';
 import AdminDoctorModal from './AdminDoctorModal';
 import AdminHospitalModal from './AdminHospitalModal';
+import AdminPackageModal from './AdminPackageModal'; // <-- Added this line
 import Header from './Header';
 import OTDepartmentSelection from './OTDepartmentSelection';
 import DepartmentSelection from './DepartmentSelection';
 import OTPackagesPage from './OTPackagesPage';
 import axios from 'axios';
-
 
 function HomePage({ setIsModalOpen, setIsDepartmentModalOpen }) {
   const navigate = useNavigate();
@@ -60,6 +60,7 @@ function HomePage({ setIsModalOpen, setIsDepartmentModalOpen }) {
       <AdminDepartmentModal isOpen={false} onClose={() => setIsDepartmentModalOpen(false)} />
       <AdminDoctorModal isOpen={false} onClose={() => {}} />
       <AdminHospitalModal isOpen={false} onClose={() => {}} />
+      <AdminPackageModal isOpen={false} onClose={() => {}} /> {/* <-- Added this line */}
 
       <div className="mb-0">
         <HeroSlider />

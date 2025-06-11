@@ -1,382 +1,187 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import Header from "./Header"; // Import the Header component
-
-const hospitals = {
-  "Apollo Gleneagles": {
-    image: "public/apollo.jpg",
-    packages: [
-      {
-        type: "Platinum",
-        price: "₹2,50,000",
-        details: "Executive suite, chief surgeon, concierge medical care.",
-        extraDetails: [
-          "Luxury stay, spa recovery, health concierge, personalized staff.",
-          "Pre-Op Checkups Included",
-          "Free Follow-Up for 15 Days",
-          "Meals Included",
-          "Priority Admission Service"
-        ],
-        features: [],
-      },
-      {
-        type: "Gold",
-        price: "₹1,50,000",
-        details: "Superior suite, experienced surgeons, post-op care.",
-        extraDetails: [
-          "Pre-Op Checkups Included",
-          "Free Follow-Up for 10 Days",
-          "Meals Included"
-        ],
-        features: [],
-      },
-      {
-        type: "Silver",
-        price: "₹1,00,000",
-        details: "Standard suite, senior surgeons, recovery care.",
-        extraDetails: [
-          "Pre-Op Checkups Included",
-          "Free Follow-Up for 7 Days"
-        ],
-        features: [],
-      },
-    ]
-  },
-  "Ruby General Hospital": {
-    image: "public/ruby.jpg",
-    packages: [
-      {
-        type: "Platinum",
-        price: "₹2,75,000",
-        details: "Executive suite, chief surgeon, 24/7 support.",
-        extraDetails: [
-          "Luxury suite, priority recovery, personalized care",
-          "Pre-Op Checkups Included",
-          "Free Follow-Up for 14 Days",
-          "Meals Included"
-        ],
-        features: [],
-      },
-      {
-        type: "Gold",
-        price: "₹1,75,000",
-        details: "Superior suite, post-op care, highly experienced surgeons.",
-        extraDetails: [
-          "Pre-Op Checkups Included",
-          "Free Follow-Up for 10 Days",
-          "Meals Included"
-        ],
-        features: [],
-      },
-      {
-        type: "Silver",
-        price: "₹1,25,000",
-        details: "Standard suite, experienced surgeons, care package.",
-        extraDetails: [
-          "Pre-Op Checkups Included",
-          "Free Follow-Up for 7 Days"
-        ],
-        features: [],
-      },
-    ]
-  },
-  "Fortis Hospital": {
-    image: "public/fortis.jpg",
-    packages: [
-      {
-        type: "Platinum",
-        price: "₹3,00,000",
-        details: "Top-tier surgeons, executive suite, premium recovery.",
-        extraDetails: [
-          "Luxury recovery, personal medical care, 24/7 support",
-          "Pre-Op Checkups Included",
-          "Free Follow-Up for 15 Days"
-        ],
-        features: [],
-      },
-      {
-        type: "Gold",
-        price: "₹1,80,000",
-        details: "Highly experienced surgeons, top-tier medical support.",
-        extraDetails: [
-          "Pre-Op Checkups Included",
-          "Free Follow-Up for 10 Days",
-          "Meals Included"
-        ],
-        features: [],
-      },
-      {
-        type: "Silver",
-        price: "₹1,20,000",
-        details: "Experienced surgeons, well-equipped rooms, recovery care.",
-        extraDetails: [
-          "Pre-Op Checkups Included",
-          "Free Follow-Up for 7 Days"
-        ],
-        features: [],
-      },
-    ]
-  },
-  "AMRI Hospital": {
-    image: "public/amri.jpg",
-    packages: [
-      {
-        type: "Platinum",
-        price: "₹2,80,000",
-        details: "Top surgeons, 24/7 medical staff, luxury suite.",
-        extraDetails: [
-          "Personalized post-op care, spa recovery, priority services",
-          "Pre-Op Checkups Included",
-          "Free Follow-Up for 15 Days"
-        ],
-        features: [],
-      },
-      {
-        type: "Gold",
-        price: "₹1,60,000",
-        details: "Highly skilled surgeons, post-op recovery, excellent care.",
-        extraDetails: [
-          "Pre-Op Checkups Included",
-          "Free Follow-Up for 10 Days",
-          "Meals Included"
-        ],
-        features: [],
-      },
-      {
-        type: "Silver",
-        price: "₹1,10,000",
-        details: "Senior surgeons, efficient recovery care, standard suite.",
-        extraDetails: [
-          "Pre-Op Checkups Included",
-          "Free Follow-Up for 7 Days"
-        ],
-        features: [],
-      },
-    ]
-  },
-  "Desun Hospital": {
-    image: "/images/desun.jpg",
-    packages: [
-      {
-        type: "Platinum",
-        price: "₹3,20,000",
-        details: "Executive suite, experienced surgeons, full recovery package.",
-        extraDetails: [
-          "Post-op recovery, luxury suite, 24/7 medical support",
-          "Pre-Op Checkups Included",
-          "Free Follow-Up for 20 Days"
-        ],
-        features: [],
-      },
-      {
-        type: "Gold",
-        price: "₹1,90,000",
-        details: "Experienced surgeons, top care, post-op monitoring.",
-        extraDetails: [
-          "Pre-Op Checkups Included",
-          "Free Follow-Up for 10 Days",
-          "Meals Included"
-        ],
-        features: [],
-      },
-      {
-        type: "Silver",
-        price: "₹1,30,000",
-        details: "Standard recovery suite, skilled surgeons.",
-        extraDetails: [
-          "Pre-Op Checkups Included",
-          "Free Follow-Up for 7 Days"
-        ],
-        features: [],
-      },
-    ]
-  },
-};
+import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
+import axios from "axios";
+import Header from "./Header";
 
 function OTPackagesPage() {
-  const [selectedHospital, setSelectedHospital] = useState(null);
-  const [selectedPackages, setSelectedPackages] = useState([]);
-  const [expandedCard, setExpandedCard] = useState(null);
-  const [sortAsc, setSortAsc] = useState(true);
+  const location = useLocation();
+  const department = location.state?.department;
 
-  const navigate = useNavigate();
+  const [hospitalList, setHospitalList] = useState([]);
+  const [selectedHospitalId, setSelectedHospitalId] = useState("");
+  const [selectedHospitalName, setSelectedHospitalName] = useState("");
+  const [packageList, setPackageList] = useState([]);
+  const [selectedPackages, setSelectedPackages] = useState([]);
+  const [detailedPackages, setDetailedPackages] = useState([]);
+  const [sortOrder, setSortOrder] = useState("");
+  const [activeModal, setActiveModal] = useState(null);
 
-  const handlePackageSelection = (pkg) => {
-    setSelectedPackages((prev) => {
-      const exists = prev.some(
-        (item) => item.type === pkg.type && item.hospital === selectedHospital
-      );
-      return exists
-        ? prev.filter(
-            (item) => !(item.type === pkg.type && item.hospital === selectedHospital)
-          )
-        : [...prev, { ...pkg, hospital: selectedHospital, image: hospitals[selectedHospital].image }];
-    });
-  };
+  useEffect(() => {
+    if (department?.id) {
+      axios
+        .get(`http://localhost:8080/department/get-hospital-by-department/${department.id}`)
+        .then((res) => setHospitalList(res.data || []))
+        .catch((err) => console.error("Failed to fetch hospitals:", err));
+    }
+  }, [department]);
 
-  const sortByPrice = () => {
-    const sorted = [...selectedPackages].sort((a, b) => {
-      const priceA = parseInt(a.price.replace(/[^0-9]/g, ""));
-      const priceB = parseInt(b.price.replace(/[^0-9]/g, ""));
-      return sortAsc ? priceA - priceB : priceB - priceA;
-    });
-    setSortAsc(!sortAsc);
-    setSelectedPackages(sorted);
-  };
+  useEffect(() => {
+    if (selectedHospitalId && department?.id) {
+      axios
+        .get(`http://localhost:8080/package/get-package-by-hospital-and-department/${department.id}/${selectedHospitalId}`)
+        .then((res) => setPackageList(res.data || []))
+        .catch((err) => console.error("Failed to fetch packages:", err));
+    }
+  }, [selectedHospitalId, department]);
 
-  return (
-    <div className="min-h-screen flex flex-col">
-      {/* Header stays fixed at top */}
-      <Header />
+  const handlePackageSelection = async (pkg) => {
+    const exists = selectedPackages.find((p) => p.id === pkg.id);
 
-      <div className="flex flex-1 overflow-hidden mt-0">
-        {/* Left Panel */}
-        <div className="w-64 bg-red-600 text-white flex flex-col p-6">
-          <h2 className="text-2xl font-bold mb-6 mt-12">Select a Hospital</h2>
-          <select
-            className="w-full p-3 rounded-lg text-black bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-white shadow-md"
-            onChange={(e) => setSelectedHospital(e.target.value)}
-          >
-            <option value="">Choose...</option>
-            {Object.keys(hospitals).map((hospital) => (
-              <option key={hospital} value={hospital}>
-                {hospital}
-              </option>
-            ))}
-          </select>
+    if (exists) {
+      setSelectedPackages((prev) => prev.filter((p) => p.id !== pkg.id));
+      setDetailedPackages((prev) => prev.filter((p) => p.id !== pkg.id));
+    } else {
+      try {
+        const res = await axios.get(`http://localhost:8080/package/get-package/${pkg.id}`);
+        setSelectedPackages((prev) => [...prev, pkg]);
+        setDetailedPackages((prev) => [...prev, res.data]);
+      } catch (err) {
+        console.error("Failed to fetch package details:", err);
+      }
+    }
+  };
 
-          {selectedHospital && (
-            <div className="mt-6">
-              <h3 className="text-xl font-semibold">Select Packages</h3>
-              {hospitals[selectedHospital].packages.map((pkg) => (
-                <div
-                  key={pkg.type}
-                  className="mt-4 flex items-center gap-3 p-4 rounded-xl shadow-lg border bg-white text-black border-gray-200"
-                >
-                  <input
-                    type="checkbox"
-                    className="w-6 h-6 accent-red-800"
-                    onChange={() => handlePackageSelection(pkg)}
-                    checked={selectedPackages.some(item => item.type === pkg.type && item.hospital === selectedHospital)}
-                  />
-                  <span className="text-lg font-medium">
-                    {pkg.type} ({pkg.price})
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+  const sortedPackages = [...detailedPackages].sort((a, b) => {
+    const priceA = a.price;
+    const priceB = b.price;
+    if (sortOrder === "asc") return priceA - priceB;
+    if (sortOrder === "desc") return priceB - priceA;
+    return 0;
+  });
 
-        {/* Right Panel */}
-        <div className="flex-1 p-6 bg-white rounded-2xl shadow-2xl overflow-y-auto relative">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-3xl font-bold text-gray-700">Selected Packages</h2>
-            {selectedPackages.length > 1 && (
-              <button
-                onClick={sortByPrice}
-                className="flex items-center gap-2 bg-red-800 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700 transition"
-              >
-                Sort by Price
-              </button>
-            )}
-          </div>
+  return (
+    <div className="min-h-screen flex flex-col">
+      <Header />
+      <div className="flex flex-1 overflow-hidden mt-0">
+        <div className="w-72 bg-red-600 text-white flex flex-col p-6 overflow-y-auto">
+          <h2 className="text-2xl font-bold mb-6 mt-12">Select a Hospital</h2>
+          <select
+            className="w-full p-3 rounded-lg text-black bg-white border border-gray-300"
+            onChange={(e) => {
+              const selectedId = e.target.value;
+              const selectedName = hospitalList.find((h) => h.id.toString() === selectedId)?.name || "";
+              setSelectedHospitalId(selectedId);
+              setSelectedHospitalName(selectedName);
+              setSelectedPackages([]);
+              setDetailedPackages([]);
+              setActiveModal(null);
+            }}
+            value={selectedHospitalId}
+          >
+            <option value="">Choose...</option>
+            {hospitalList.map((hospital) => (
+              <option key={hospital.id} value={hospital.id}>{hospital.name}</option>
+            ))}
+          </select>
 
-          {selectedPackages.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {selectedPackages.map((pkg, index) => (
-                <div
-                  key={index}
-                  className="border rounded-xl p-6 shadow-lg transition-all bg-gray-100 border-gray-300 text-black"
-                >
-                  <img
-                    src={pkg.image}
-                    alt={pkg.hospital}
-                    className="w-full h-40 object-cover rounded-lg mb-4"
-                  />
-                  <h3 className="text-xl font-bold text-red-800">{pkg.hospital}</h3>
-                  <p className="text-lg font-semibold">
-                    {pkg.type} - <span className="text-green-600">{pkg.price}</span>
-                  </p>
-                  <ul className="mt-2 space-y-2">
-                    {pkg.features.map((feature, i) => (
-                      <li key={i} className="flex items-center gap-2">
-                        {feature.icon} {feature.text}
-                      </li>
-                    ))}
-                  </ul>
-                  <p className="mt-2">{pkg.details.substring(0, 50)}...</p>
-                  <p
-                    onClick={() => setExpandedCard(index)}
-                    className="mt-2 text-blue-600 hover:underline cursor-pointer"
-                  >
-                    See More
-                  </p>
+          {selectedHospitalId && packageList.length > 0 && (
+            <>
+              <h3 className="text-xl font-semibold mt-8 mb-4">Select Packages</h3>
+              <div className="space-y-3">
+                {packageList.map((pkg) => (
+                  <label key={pkg.id} className="flex items-center gap-3 bg-white text-black p-3 rounded-xl shadow-lg cursor-pointer">
+                    <input
+                      type="checkbox"
+                      className="w-5 h-5 accent-red-700"
+                      checked={selectedPackages.some((p) => p.id === pkg.id)}
+                      onChange={() => handlePackageSelection(pkg)}
+                    />
+                    <div>
+                      <p className="text-lg font-semibold">{pkg.name}</p>
+                      <p className="text-gray-700">₹{pkg.price.toLocaleString("en-IN")}</p>
+                    </div>
+                  </label>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
 
-                  <button
-                    onClick={() => navigate("/book-ot")}
-                    className="mt-2 w-full bg-green-500 text-white px-4 py-3 rounded-lg text-lg shadow hover:bg-blue-700 transition"
-                  >
-                    BOOK OT
-                  </button>
+        <div className="flex-1 p-8 bg-white rounded-2xl shadow-2xl overflow-y-auto relative">
+          {!selectedHospitalId ? (
+            <div className="flex flex-col justify-center items-center h-full">
+              <h1 className="text-3xl font-bold text-gray-700 mb-4">Welcome to HealCraft</h1>
+              <p className="text-gray-600 text-lg">Please select a hospital from the sidebar to proceed.</p>
+            </div>
+          ) : sortedPackages.length === 0 ? (
+            <div className="flex flex-col justify-center items-center h-full text-center">
+              <h1 className="text-3xl font-bold text-gray-700 mb-4">
+                Select Package(s) for <span className="text-red-700">{selectedHospitalName}</span>
+              </h1>
+              <p className="text-lg text-gray-600">Your selected package(s) will appear here.</p>
+            </div>
+          ) : (
+            <>
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-3xl font-bold text-gray-700">Selected Packages</h2>
+                <button className="bg-red-700 text-white px-4 py-2 rounded-md" onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}>
+                  Sort by Price: {sortOrder === "asc" ? "Low to High" : "High to Low"}
+                </button>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {sortedPackages.map((pkg) => (
+                  <div key={pkg.id} className="bg-gray-100 rounded-xl shadow-lg overflow-hidden border border-gray-300">
+                    <img
+                      src={`/images/${selectedHospitalName.toLowerCase().replace(/ /g, "-")}.jpg`}
+                      alt={pkg.hospital?.name}
+                      className="w-full h-40 object-cover"
+                    />
+                    <div className="p-4">
+                      <h3 className="text-xl font-bold text-red-700">{pkg.hospital?.name}</h3>
+                      <p className="text-lg font-semibold mb-1">
+                        {pkg.name} - <span className="text-green-600">₹{pkg.price.toLocaleString("en-IN")}</span>
+                      </p>
+                      <p className="text-gray-700">Room Type: {pkg.roomtype}</p>
+                      <p className="text-gray-700 mb-2">Food Type: {pkg.foodtype}</p>
+                      <button onClick={() => setActiveModal(pkg.id)} className="text-blue-600 underline text-sm">See More</button>
+                      <div className="mt-4 flex gap-2">
+                        <button className="bg-green-500 text-white px-4 py-2 rounded-md w-full hover:bg-green-600">BOOK OT</button>
+                        <button onClick={() => handlePackageSelection(pkg)} className="bg-red-500 text-white px-4 py-2 rounded-md w-full hover:bg-red-600">Remove</button>
+                      </div>
+                    </div>
 
-                  <button
-                    className="mt-2 w-full bg-red-500 text-white px-2 py-2 rounded-lg shadow-lg hover:bg-red-700 transition"
-                    onClick={() => setSelectedPackages(prev => prev.filter((_, i) => i !== index))}
-                  >
-                    Remove
-                  </button>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="mt-6 text-lg font-medium text-gray-500">No package selected</p>
-          )}
-
-          {/* Modal View for Expanded Card */}
-          {expandedCard !== null && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-md bg-black/40 transition duration-300 ease-in-out">
-              <div className="w-full max-w-2xl p-6 rounded-2xl relative shadow-2xl bg-white text-black">
-                <button
-                  className="absolute top-4 right-4 text-red-500 hover:text-red-700"
-                  onClick={() => setExpandedCard(null)}
-                >
-                  Close
-                </button>
-                <img
-                  src={selectedPackages[expandedCard].image}
-                  alt={selectedPackages[expandedCard].hospital}
-                  className="w-full h-56 object-cover rounded-lg mb-4"
-                />
-                <h3 className="text-2xl font-bold text-red-800">{selectedPackages[expandedCard].hospital}</h3>
-                <p className="text-xl font-semibold mb-2">
-                  {selectedPackages[expandedCard].type} - <span className="text-green-600">{selectedPackages[expandedCard].price}</span>
-                </p>
-                <ul className="space-y-2">
-                  {selectedPackages[expandedCard].features.map((feature, i) => (
-                    <li key={i} className="flex items-center gap-2">
-                      {feature.icon} {feature.text}
-                    </li>
-                  ))}
-                </ul>
-                <p className="mt-4 text-lg">
-                  {Array.isArray(selectedPackages[expandedCard].extraDetails)
-                    ? selectedPackages[expandedCard].extraDetails.join(" | ")
-                    : selectedPackages[expandedCard].extraDetails}
-                </p>
-                <button
-                  onClick={() => navigate("/book-ot")}
-                  className="mt-6 w-full bg-green-500 text-white px-4 py-3 rounded-lg text-lg shadow hover:bg-blue-700 transition"
-                >
-                  BOOK OT
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
+                    {activeModal === pkg.id && (
+                      <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                        <div className="bg-white w-full max-w-xl rounded-xl shadow-xl overflow-hidden relative">
+                          <button onClick={() => setActiveModal(null)} className="absolute top-2 right-2 text-2xl text-red-600 font-bold z-10">×</button>
+                          <img
+                            src={`/images/${selectedHospitalName.toLowerCase().replace(/ /g, "-")}.jpg`}
+                            alt={pkg.hospital?.name}
+                            className="w-full h-56 object-cover"
+                          />
+                          <div className="p-6">
+                            <h3 className="text-xl font-bold text-red-700 mb-2">{pkg.hospital?.name}</h3>
+                            <p className="text-lg font-semibold mb-2">{pkg.name} - <span className="text-green-600">₹{pkg.price.toLocaleString("en-IN")}</span></p>
+                            <p><strong>Room Type:</strong> {pkg.roomtype}</p>
+                            <p><strong>Food Type:</strong> {pkg.foodtype}</p>
+                            <p><strong>Nurse Facility:</strong> {pkg.nurseFacility ? "Yes" : "No"}</p>
+                            <p><strong>Pick & Drop:</strong> {pkg.pickDrop ? "Yes" : "No"}</p>
+                            <p><strong>Post Care:</strong> {pkg.postCare ? "Yes" : "No"}</p>
+                            <p><strong>Physiotherapy:</strong> {pkg.physiotherapy ? "Yes" : "No"}</p>
+                            <button className="w-full mt-4 bg-green-600 hover:bg-green-700 text-white py-2 rounded-md">BOOK OT</button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default OTPackagesPage;

@@ -34,7 +34,7 @@ function OTDepartmentSelection() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8080/department/get-all-department")
+      .get("http://localhost:8080/department/get-active-department")
       .then((res) => setDepartments(res.data))
       .catch((err) => console.error("Failed to fetch departments:", err));
   }, []);
@@ -45,7 +45,6 @@ function OTDepartmentSelection() {
 
   const filteredDepartments = departments.filter(
     (dept) =>
-      dept.active &&
       dept.name.toLowerCase().includes(searchTerm.trim().toLowerCase())
   );
 
@@ -133,7 +132,7 @@ function OTDepartmentSelection() {
               return (
                 <button
                   key={name}
-                  onClick={() => handleDepartmentClick(name)}
+                  onClick={() => handleDepartmentClick(dept)}
                   className="bg-gray-100 w-[300px] h-[134px] p-4 rounded-lg shadow hover:shadow-lg transition flex flex-col items-center justify-center text-center"
                 >
                   {iconSrc ? (
